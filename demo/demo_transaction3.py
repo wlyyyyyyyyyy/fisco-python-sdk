@@ -51,6 +51,7 @@ try:
     print("deploy", result)
     print("new address : ", result["contractAddress"])
     contract_name = os.path.splitext(os.path.basename(abi_file))[0]
+    print("contract name: ", contract_name)
     memo = "tx:" + result["transactionHash"]
     # 把部署结果存入文件备查
     ContractNote.save_address_to_contract_note("demo",contract_name,

@@ -1,0 +1,8 @@
+Epoch: 1, Batch: 0/782, Loss: 2.3091
+Epoch: 1, Batch: 100/782, Loss: 1.7916
+Epoch: 1, Batch: 200/782, Loss: 1.5876
+Epoch: 1, Batch: 300/782, Loss: 1.4934
+Epoch: 1, Batch: 400/782, Loss: 1.4458
+Epoch: 1, Batch: 500/782, Loss: 1.1846
+Epoch: 1, Batch: 600/782, Loss: 1.3684
+Epoch: 1, Batch: 700/782, Loss: 1.3018

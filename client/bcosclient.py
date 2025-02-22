@@ -65,6 +65,10 @@ class BcosClient:
         self.init(client_config_instance)
         self.lastblocknum = 0
         self.lastblocklimittime = 0
+        
+    def set_from_account_signer(self, node_id):
+        self.key_file = "{}/{}.pem".format(client_config.account_keyfile_path,node_id)
+        self.default_from_account_signer = Signer_ECDSA.from_key_file(self.key_file, None)
 
     #返回能完整标识此客户端的字符串，先简单点，可以根据场景扩展，比如增加ip地址端口等
     def get_full_name(self):

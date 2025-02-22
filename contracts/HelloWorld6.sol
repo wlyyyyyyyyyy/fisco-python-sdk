@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
 contract HelloWorld6{
     string name;
     event onset(string newname);
-    constructor() public{
+    constructor(){
        name = "Hello, World!";
     }
 

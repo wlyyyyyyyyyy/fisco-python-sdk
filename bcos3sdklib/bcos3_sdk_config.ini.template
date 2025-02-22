@@ -1,0 +1,36 @@
+[common]
+    ; if ssl connection is disabled, default: false
+    ; disable_ssl = true
+    ; thread pool size for network message sending recving handing
+    thread_pool_size = 8
+    ; send message timeout(ms)
+    message_timeout_ms = 10000
+
+; ssl cert config items,  
+[cert]
+    ; ssl_type: ssl or sm_ssl, default: ssl
+    ssl_type = ssl
+    ; directory the certificates located in, defaul: ./conf
+    ca_path=./bin
+    ; the ca certificate file.Filename only,NOT the full path
+    ca_cert=ca.crt
+    ; the node private key file.Filename only,NOT the full path
+    sdk_key=sdk.key
+    ; the node certificate file.Filename only,NOT the full path
+    sdk_cert=sdk.crt
+
+[peers]
+    ; 添加所有节点
+    node.0=127.0.0.1:20200
+    node.1=127.0.0.1:20201
+    node.2=127.0.0.1:20202
+    node.3=127.0.0.1:20203
+    node.4=127.0.0.1:20204
+
+[network]
+    ; 确保网络配置也匹配
+    channel_listen_port=30300
+
+[chain]
+    chain_id=chain1
+    group_id=group1

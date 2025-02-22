@@ -1,18 +1,18 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.7.6;
 
-contract HelloWorld{
-    string name;
-    event onset(string newname);
-    constructor() public{
-       name = "Hello, World!";
+contract HelloWorld {
+    string private name;
+    //event Onset(string newname);
+    constructor() {
+        name = "Hello, World!";
     }
 
-    function get() constant public returns(string){
+    function get() public view returns (string memory) {
         return name;
     }
 
-    function set(string n) public{
-	emit onset(n);
-    	name = n;
+    function set(string memory n) public {
+        //emit Onset(n);
+        name = n;
     }
 }

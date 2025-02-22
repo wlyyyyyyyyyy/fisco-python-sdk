@@ -1,4 +1,5 @@
-pragma solidity ^0.6.10;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
 contract SimpleInfo{
     string  name = "";
     uint256 balance = 0;
@@ -11,9 +12,11 @@ contract SimpleInfo{
 	event on_set_empty(string msg);
 	
 
-    constructor() public
+    constructor()
     {
     }
+    // 其他函数
+
 
     function getname() view public returns(string memory){
         return name;
@@ -58,11 +61,13 @@ contract SimpleInfo{
 		emit on_change(0,name,balance,addr,"balance add");
 		return balance;
 	}
-	function reset() public returns (int){
+	function reset() public returns (int result){
 		name="";
 		balance = 0;
 		addr = address(0);
 		emit on_reset(-100,name);
+        result =0;
+        return result;
 	}
 
     fallback()  external{ counter = counter+1; }
