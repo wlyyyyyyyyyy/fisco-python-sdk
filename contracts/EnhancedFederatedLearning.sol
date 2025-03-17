@@ -4,7 +4,7 @@ contract EnhancedFederatedLearning {
 
     mapping(uint => string) public globalModelUpdates;
     mapping(uint => mapping(string => string)) public participantModelUpdates; // Nested mapping to store updates per round and participant
-    string public initialModel = "Initial Model - Very Simple";
+    string public initialModel = "Initial Model - Enhanced";
     mapping(uint => string[]) public roundParticipantIds; //  **新增：存储每个 round 的 participantId 数组**
 
 
@@ -17,7 +17,7 @@ contract EnhancedFederatedLearning {
             globalModelUpdates[roundNumber] = modelUpdate;
         } else {
             participantModelUpdates[roundNumber][roleName] = modelUpdate;
-            // **新增：将 participantId 添加到 roundParticipantIds 数组 (如果尚未存在)**
+            
             bool alreadyAdded = false;
             string[] storage ids = roundParticipantIds[roundNumber];
             for (uint256 i = 0; i < ids.length; i++) {

@@ -16,6 +16,8 @@ import argparse
 import shutil
 import json
 import torch
+import datetime
+from client_config import client_config as ClientConfig
 
 # =====  导入 fl_multi_utils.py 中的通用函数和类  =====
 from myclient.fl_multi_utils import ( #  !!!  导入 fl_multi_utils  !!!
@@ -32,8 +34,8 @@ from myclient.fl_multi_utils import ( #  !!!  导入 fl_multi_utils  !!!
     evaluate_model,
     upload_model_update,
     download_global_model,
-    # aggregate_global_model, #  !!!  聚合函数暂时不导入，后面再添加 !!!
-    # upload_global_model,    #  !!!  上传全局模型函数暂时不导入，后面再添加 !!!
+    aggregate_global_model, #  !!!  聚合函数暂时不导入，后面再添加 !!!
+    upload_global_model,    #  !!!  上传全局模型函数暂时不导入，后面再添加 !!!
 )
 
 # ----- 合约信息 (需要根据你的实际情况修改) -----
@@ -42,7 +44,7 @@ CONTRACT_PATH = "./contracts/EnhancedFederatedLearning.sol" #  !!!  合约路径
 ABI_PATH = "./contracts/EnhancedFederatedLearning.abi" #  !!!  ABI 路径保持不变 !!!
 BIN_PATH = "./contracts/EnhancedFederatedLearning.bin" #  !!!  BIN 路径保持不变 !!!
 CONTRACT_NOTE_NAME = "federatedlearning_multi_demo" #  !!!  修改 Contract Note 名称为 multi 版本 !!!
-CONTRACT_ADDRESS = "" #  合约地址可以从命令行参数传入
+CONTRACT_ADDRESS = "" #  !!!  合约地址硬编码在这里 !!!
 
 # ----- 配置 -----
 demo_config = client_config
@@ -60,17 +62,17 @@ contract_abi = data_parser.contract_abi
 
 # ==========  中央服务器角色函数 (多节点版本) ==========
 def run_central_server(central_server_client, contract_abi, contract_address, args, run_mode, log_dir="fl_multi_log"): #  !!!  修改默认 log_dir !!!
-    if run_mode == 1: # 第一次运行 (Preparation Node)
+    if run_mode == 1: 
         print(f"\n>>Starting Central Server (Preparation Node)...")
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Preparation) <<<<<<")
         print(f"\n>>Central Server (Preparation Node) in Round: {args.current_round}")
         log_operation(log_dir, args.current_round, "server", "preparation_start", "Central Server Preparation Node started.")
-    elif run_mode == 2: # 第二次运行 (Aggregation Node)
+    elif run_mode == 2:
         print(f"\n>>Starting Central Server (Aggregation Node)...")
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Aggregation) <<<<<<")
         print(f"\n>>Central Server (Aggregation Node) in Round: {args.current_round}")
         log_operation(log_dir, args.current_round, "server", "aggregation_start", "Central Server Aggregation Node started.")
-    elif run_mode == 3: # 第三次运行 (Testing/Evaluation Node)
+    elif run_mode == 3: 
         print(f"\n>>Starting Central Server (Testing Node - Evaluation)...")
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Evaluation) <<<<<<")
         print(f"\n>>Central Server (Testing Node - Evaluation) in Round: {args.current_round}")
@@ -102,7 +104,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
                 return
 
 
-    if run_mode == 2: # 第二次运行 (Aggregation Node) - 模型聚合和更新
+    if run_mode == 2: 
         # ----- 2. 下载参与者模型更新 -----
         print("\n>>Central Server (Aggregation Node): Downloading Participant Model Updates...")
         log_operation(log_dir, args.current_round, "server", "download_participant_updates_start", "Central Server starts downloading participant model updates.")
@@ -142,7 +144,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
         print(f"\n>>Central Server (Aggregation Node) Completed Round: {args.current_round}")
 
 
-    elif run_mode == 3: # 第三次运行 (Testing Node - Evaluation) - 模型评估节点
+    elif run_mode == 3: 
         # ----- 2. 加载测试数据集 -----
         print("\n>>Central Server (Testing Node - Evaluation): Loading Test Data...")
         if args.dataset == 'cifar10':
@@ -174,6 +176,7 @@ def run_participant_node(participant_client, contract_abi, contract_address, arg
     print(f"\n>>Participant Node ({participant_id}): Downloading Global Model...")
     log_operation(log_dir, args.current_round, participant_id, "download_global_model_start", f"Participant Node {participant_id} starts downloading global model.")
     downloaded_model_str = download_global_model(participant_client, contract_abi, contract_address, None, participant_id) #  !!!  角色名使用 participant_id !!!
+    print(f"\n>>[DEBUG - Participant Node] Downloaded Model String: {downloaded_model_str}") # DEBUG - Print downloaded string # ADDED DEBUG PRINT
     if downloaded_model_str:
         print(f"\n>>Global Model downloaded successfully (for Participant: {participant_id}).")
         log_operation(log_dir, args.current_round, participant_id, "download_global_model_success", f"Participant Node {participant_id} global model downloaded successfully.")
@@ -213,59 +216,6 @@ def run_participant_node(participant_client, contract_abi, contract_address, arg
 
 
 
-# ==========  模型聚合函数 (简单的平均聚合) -  需要实现，并添加到 fl_multi_utils.py 中 ==========
-def aggregate_global_model(global_model, participant_updates, model_type='cnn'): #  !!!  聚合函数需要实现 !!!
-    print("\n>>Starting Global Model Aggregation (Multi-Node Version)...") #  !!! 修改打印信息， 区分多节点版本 !!!
-    aggregated_state_dict = {}
-    participant_models = []
-
-    for update in participant_updates: # 遍历 participant_updates JSON 数组
-        participant_id = update['participantId'] # 从 JSON 中获取 participantId
-        model_update_str = update['modelUpdate'] # 从 JSON 中获取 modelUpdate (模型字符串)
-        print(f"\n>>Deserializing model update from participant: {participant_id}...")
-        participant_model = deserialize_model(model_update_str, model_type=model_type)
-        participant_models.append(participant_model)
-
-    # -----  简单的平均聚合  -----
-    print("\n>>Performing Averaging Aggregation...")
-    with torch.no_grad():
-        # 初始化聚合模型的状态字典
-        for name, param in global_model.state_dict().items():
-            aggregated_state_dict[name] = torch.zeros_like(param)
-
-        # 累加所有参与者模型的权重
-        for participant_model in participant_models:
-            for name, param in participant_model.state_dict().items():
-                aggregated_state_dict[name] += param
-
-        # 平均权重
-        num_participants = len(participant_models)
-        for name, param in aggregated_state_dict.items():
-            aggregated_state_dict[name] /= num_participants
-
-        # 将聚合后的状态字典加载到全局模型
-        global_model.load_state_dict(aggregated_state_dict)
-
-    print("\n>>Global Model Aggregation Finished! (Multi-Node Version)") #  !!! 修改打印信息， 区分多节点版本 !!!
-    return global_model
-
-
-# ==========  全局模型上传函数 (需要实现，并添加到 fl_multi_utils.py 中) ==========
-def upload_global_model(central_server_client, contract_abi, contract_address, global_model_str): #  !!!  全局模型上传函数需要实现 !!!
-    print(f"\n>>Uploading Aggregated Global Model (from Role: server)...")
-    to_address = contract_address
-    fn_name = "updateModel"
-    args = [global_model_str, 0, "server"] # 轮数设置为 0, 角色名设置为 "server"
-    receipt = central_server_client.sendRawTransaction(to_address, contract_abi, fn_name, args)
-    if receipt is not None and receipt["status"] == 0:
-        print(f"Upload Aggregated Global Model Success (from Role: server), receipt: {receipt}")
-        return True
-    else:
-        print(f"Upload Aggregated Global Model Failed (from Role: server), receipt: {receipt}")
-        return False
-
-
-
 # ==========  主程序入口 (Demo 模式 -  多进程多客户端，多节点模拟) ==========
 if __name__ == "__main__":
     print("\n>>Starting Federated Learning Demo (Multi-Node Version, Parameter Configurable, Multi-Round Training, Evaluation and Logging, Per-Round Evaluation, Clear Log Folder, Optimized Client Creation, 3-Run Central Server):----------------------------------------------------------") #  !!! 修改打印信息 -  标记为 Multi-Node Version
@@ -280,17 +230,15 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default='mlp', choices=['mlp', 'cnn'], help='Model to use (mlp or cnn)')
     parser.add_argument('--epochs', type=int, default=1, help='Number of local training epochs per round (default: 1)')
     parser.add_argument('--rounds', type=int, default=2, help='Number of federated learning rounds (default: 2)')
-    parser.add_argument('--contract_address', type=str, default='', help='Optional: Contract address to use. If not provided, a new contract will be deployed.')
     parser.add_argument('--role', type=str, default='demo', choices=['demo', 'server', 'participant'], help='Role to run (demo, server, participant)') # 角色参数 (虽然 demo 模式固定为 demo)
     parser.add_argument('--log_dir', type=str, default='fl_multi_log', help='Directory to save log files (default: fl_multi_log)') #  !!!  日志文件夹参数修改为 fl_multi_log !!!
     parser.add_argument('--num_participants', type=int, default=3, help='Number of participant nodes to simulate in demo mode (default: 3)') #  !!!  新增 num_participants 参数 !!!
-
+    parser.add_argument('--address', type=str, default='', help='Contract address to interact with') #  !!!  移除 address 参数 !!!
     args = parser.parse_args()
 
-    print(f"\n>>Running with configurations: Dataset: {args.dataset}, Model: {args.model}, Epochs: {args.epochs}, Rounds: {args.rounds}, Role: {args.role}, Contract Address: {args.contract_address}, Log Dir: {args.log_dir}, Num Participants: {args.num_participants}") #  !!!  打印配置信息 -  新增 Num Participants !!!
+    print(f"\n>>Running with configurations: Dataset: {args.dataset}, Model: {args.model}, Epochs: {args.epochs}, Rounds: {args.rounds}, Role: {args.role}, Log Dir: {args.log_dir}, Num Participants: {args.num_participants}") #  !!!  打印配置信息 -  去除 Contract Address, 新增 Num Participants !!!
 
 
-    CONTRACT_ADDRESS = args.contract_address
     role = args.role #  从命令行参数获取角色 (虽然 demo 模式固定为 demo)
     log_dir = args.log_dir #  从命令行参数获取日志文件夹路径
     num_participants = args.num_participants #  从命令行参数获取参与者数量
@@ -310,11 +258,15 @@ if __name__ == "__main__":
     central_server_client = Bcos3Client() #  创建中央服务器客户端实例
     participant_clients = [] #  !!!  使用列表存储多个参与者客户端实例 !!!
     for i in range(num_participants): #  !!!  根据 num_participants 创建多个参与者客户端 !!!
-        participant_clients.append(Bcos3Client()) #  为每个参与者创建一个客户端实例
+        client_config=ClientConfig()
+        client_config.account_keyfile = f"client{i}.keystore" #!!!  根据参与者 ID 生成 keystore 文件名!!!
+        client_config.account_password = f"{i}"*6 #!!!  固定密码!!!
+        participant_clients.append(Bcos3Client(client_config)) #  为每个参与者创建一个客户端实例
 
 
     # ========== 部署合约 (Demo Mode - Server Part - Preparation) - 部署合约只在第一轮之前进行 ==========
-    if not CONTRACT_ADDRESS:
+    CONTRACT_ADDRESS = args.address # 从命令行参数获取合约地址
+    if not CONTRACT_ADDRESS: # 使用硬编码的 CONTRACT_ADDRESS，这里判断可以移除，直接部署
         print(f"\n>>Demo Mode - Central Server (Preparation Node): Deploying contract...")
         with open(BIN_PATH, 'r') as f:
             contract_bin = f.read()
@@ -323,11 +275,20 @@ if __name__ == "__main__":
         if deploy_result is None or deploy_result["status"] != 0:
             print(f"Deploy contract failed, result: {deploy_result}")
             exit()
-        CONTRACT_ADDRESS = deploy_result["contractAddress"]
+        CONTRACT_ADDRESS = deploy_result["contractAddress"] # 更新 CONTRACT_ADDRESS 为实际部署地址
+        with open("fl_multi_log.txt", 'a') as f:
+            f.write(f"\n[Parameters @ {datetime.datetime.now()}]\n")
+            f.write(f"Dataset: {args.dataset}\n")
+            f.write(f"Model: {args.model}\n")
+            f.write(f"Epochs: {args.epochs}\n")
+            f.write(f"Rounds: {args.rounds}\n") 
+            f.write(f"Participants: {args.num_participants}\n")
+            f.write(f"Contract Address: {CONTRACT_ADDRESS}\n")
+            f.write("-"*40 + "\n")
         print(f"Demo Mode - Central Server (Preparation Node): Deploy contract success, contract address: {CONTRACT_ADDRESS}")
         ContractNote.save_address_to_contract_note(CONTRACT_NOTE_NAME, CONTRACT_NAME, CONTRACT_ADDRESS)
-    else:
-        print(f"\n>>Demo Mode - Central Server (Preparation Node): Using existing contract at: {CONTRACT_ADDRESS}")
+    else: # 即使有硬编码地址，也提示正在使用
+        print(f"\n>>Demo Mode - Central Server (Preparation Node): Using existing contract at hardcoded address: {CONTRACT_ADDRESS}")
 
 
     # ==========  多轮联邦学习循环  ==========

@@ -1,0 +1,54 @@
+
+[Parameters @ 2025-03-05 11:08:47.567394]
+Dataset: cifar10
+Model: cnn
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x604a4ca3e368f3b3b88c9335eb88792e6e2c7375
+----------------------------------------
+
+[Parameters @ 2025-03-05 11:14:49.919379]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0xa1c6e864f9e5f5f4d79482005070a890572f2ebc
+----------------------------------------
+
+[Parameters @ 2025-03-06 14:39:49.359989]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0xd344f49aed513557156317f0f353a361d7b18624
+----------------------------------------
+
+[Parameters @ 2025-03-06 14:40:38.551879]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x8731f8d15489e637407d2843abbfc1847df7f345
+----------------------------------------
+
+[Parameters @ 2025-03-06 14:44:09.952628]
+Dataset: cifar10
+Model: cnn
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x9250f5a419c8b9262b38e440fd2b3aec6da5aa4e
+----------------------------------------
+
+[Parameters @ 2025-03-17 11:10:53.955944]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x7eb40941acf69bc93e0dd62c33dff8fb41d307cc
+----------------------------------------

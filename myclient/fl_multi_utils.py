@@ -10,6 +10,8 @@ from torch.utils.data import DataLoader, Subset
 import io
 import base64
 import os
+import tempfile
+import json #  !!!  Import json for aggregation function  !!!
 
 # ==========  操作日志记录函数 (保持不变) ==========
 def log_operation(log_dir, round_num, role_name, operation_type, message):
@@ -142,8 +144,12 @@ def serialize_model(model):
 
 
 def deserialize_model(model_str, model_type='cnn'):
-    initial_model_placeholder = "Initial Model - Very Simple"
-    if model_str == initial_model_placeholder:
+    initial_model_placeholder = "Initial Model - Enhanced"
+    print(f"\n>>[DEBUG - deserialize_model] model_str (repr): {repr(model_str)}") # DEBUG - Print input model_str
+    print(f"\n>>[DEBUG - deserialize_model] initial_model_placeholder (repr): {repr(initial_model_placeholder)}") # DEBUG - Print placeholder string
+    model_str_stripped = model_str.strip() # 去除 model_str 前后空白
+    initial_model_placeholder_stripped = initial_model_placeholder.strip() # 去除 placeholder 前后空白
+    if model_str_stripped == initial_model_placeholder_stripped: # 使用去除空白后的字符串进行比较
         print(f"\n>>Initial Model Placeholder String Detected. Initializing new {model_type.upper()} model...")
         if model_type == 'mlp':
             model = MLP()
@@ -191,6 +197,7 @@ def train_model(model, train_loader, epochs=1, log_dir="fl_multi_log", round_num
                     print(log_info)
                     log_file.write(log_info + '\n')
         print(f"\n>>Local Model Training Finished for Participant: {participant_id}!")
+        
     return model
 
 
@@ -249,3 +256,71 @@ def download_global_model(client, contract_abi, contract_address, participant_ad
     else:
         print(f"Download Failed (for Role: {role_name}), result: {get_result}")
         return None
+
+
+# ==========  模型聚合函数 (简单的平均聚合) -  需要实现，并添加到 fl_multi_utils.py 中 ==========
+def aggregate_global_model(global_model, participant_updates, model_type='cnn'): #  !!!  聚合函数需要实现 !!!
+    print("\n>>Starting Global Model Aggregation (Multi-Node Version)...") #  !!! 修改打印信息， 区分多节点版本 !!!
+    aggregated_state_dict = {}
+    participant_models = []
+
+    for update in participant_updates: # 遍历 participant_updates JSON 数组
+        participant_id = update['participantId'] # 从 JSON 中获取 participantId
+        model_update_str = update['modelUpdate'] # 从 JSON 中获取 modelUpdate (模型字符串)
+        print(f"\n>>Deserializing model update from participant: {participant_id}...")
+        participant_model = deserialize_model(model_update_str, model_type=model_type)
+        participant_models.append(participant_model)
+
+    # -----  简单的平均聚合  -----
+    print("\n>>Performing Averaging Aggregation...")
+    with torch.no_grad():
+        # 初始化聚合模型的状态字典
+        for name, param in global_model.state_dict().items():
+            aggregated_state_dict[name] = torch.zeros_like(param)
+
+        # 累加所有参与者模型的权重
+        for participant_model in participant_models:
+            for name, param in participant_model.state_dict().items():
+                aggregated_state_dict[name] += param
+
+        # 平均权重
+        num_participants = len(participant_models)
+        for name, param in aggregated_state_dict.items():
+            aggregated_state_dict[name] /= num_participants
+
+        # 将聚合后的状态字典加载到全局模型
+        global_model.load_state_dict(aggregated_state_dict)
+    
+        # 计算并打印大小
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+            # 保存 aggregated_state_dict
+            torch.save(aggregated_state_dict, tmp_file.name)
+            aggregated_state_dict_size = os.path.getsize(tmp_file.name) / (1024 * 1024)  # MB
+
+            # 保存 global_model
+            torch.save(global_model.state_dict(), tmp_file.name)
+            global_model_size = os.path.getsize(tmp_file.name) / (1024 * 1024) # MB
+
+        os.remove(tmp_file.name) # 删除临时文件
+
+        with open("fl_multi_log/aggregated_model.txt", 'a') as f:
+            f.write(f"Aggregated State Dict Size: {aggregated_state_dict_size:.4f} MB\n")
+            f.write(f"Global Model Size: {global_model_size:.4f} MB\n")
+            
+    print("\n>>Global Model Aggregation Finished! (Multi-Node Version)") #  !!! 修改打印信息， 区分多节点版本 !!!
+    return global_model
+
+
+# ==========  全局模型上传函数 (需要实现，并添加到 fl_multi_utils.py 中) ==========
+def upload_global_model(client, contract_abi, contract_address, global_model_str): #  !!!  全局模型上传函数需要实现 !!!
+    print(f"\n>>Uploading Aggregated Global Model (from Role: server)...")
+    to_address = contract_address
+    fn_name = "updateModel"
+    args = [global_model_str, 0, "server"] # 轮数设置为 0, 角色名设置为 "server"
+    receipt = client.sendRawTransaction(to_address, contract_abi, fn_name, args)
+    if receipt is not None and receipt["status"] == 0:
+        print(f"Upload Aggregated Global Model Success (from Role: server), receipt: {receipt}")
+        return True
+    else:
+        print(f"Upload Aggregated Global Model Failed (from Role: server), receipt: {receipt}")
+        return False
