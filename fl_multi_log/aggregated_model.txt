@@ -1,0 +1,4 @@
+Aggregated State Dict Size: 0.3896 MB
+Global Model Size: 0.3898 MB
+Aggregated State Dict Size: 0.3896 MB
+Global Model Size: 0.3898 MB

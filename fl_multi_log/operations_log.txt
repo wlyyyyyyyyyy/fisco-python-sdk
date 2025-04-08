@@ -12,3 +12,57 @@ Round: 1, Role: participant2, Operation: training_node_start, Message: Participa
 Round: 1, Role: participant2, Operation: download_global_model_start, Message: Participant Node participant2 starts downloading global model.
 Round: 1, Role: participant2, Operation: download_global_model_success, Message: Participant Node participant2 global model downloaded successfully.
 Round: 1, Role: participant2, Operation: local_training_start, Message: Participant Node participant2 local model training started.
+Round: 1, Role: participant2, Operation: local_training_success, Message: Participant Node participant2 local model training finished.
+Round: 1, Role: participant2, Operation: upload_model_update_start, Message: Participant Node participant2 starts uploading model update.
+Round: 1, Role: participant2, Operation: upload_model_update_success, Message: Participant Node participant2 model update uploaded successfully.
+Round: 1, Role: participant2, Operation: training_node_complete, Message: Participant Node participant2 Training Node Finished Round: 1
+Round: 1, Role: server, Operation: aggregation_start, Message: Central Server Aggregation Node started.
+Round: 1, Role: server, Operation: download_global_model_start, Message: Central Server starts downloading global model.
+Round: 1, Role: server, Operation: download_global_model_success, Message: Global model downloaded successfully.
+Round: 1, Role: server, Operation: download_participant_updates_start, Message: Central Server starts downloading participant model updates.
+Round: 1, Role: server, Operation: download_participant_updates_success, Message: Participant model updates downloaded successfully.
+Round: 1, Role: server, Operation: aggregation_model_start, Message: Central Server starts aggregating model updates.
+Round: 1, Role: server, Operation: aggregation_model_success, Message: Global model aggregation finished.
+Round: 1, Role: server, Operation: upload_aggregated_model_start, Message: Central Server starts uploading aggregated global model.
+Round: 1, Role: server, Operation: upload_aggregated_model_success, Message: Aggregated global model uploaded successfully.
+Round: 1, Role: server, Operation: aggregation_complete, Message: Central Server Aggregation Node Completed Round: 1
+Round: 1, Role: server, Operation: evaluation_start, Message: Central Server Evaluation Node started.
+Round: 1, Role: server, Operation: download_global_model_start, Message: Central Server starts downloading global model.
+Round: 1, Role: server, Operation: download_global_model_success, Message: Global model downloaded successfully.
+Round: 1, Role: server, Operation: evaluation_model_start, Message: Central Server starts evaluating global model.
+Round: 1, Role: server, Operation: evaluation_model_success, Message: Global model evaluation finished.
+Round: 1, Role: server, Operation: evaluation_complete, Message: Central Server Evaluation Node Completed Round: 1
+Round: 2, Role: server, Operation: preparation_start, Message: Central Server Preparation Node started.
+Round: 2, Role: server, Operation: preparation_complete, Message: Central Server Preparation Node Completed Round: 2
+Round: 2, Role: participant1, Operation: training_node_start, Message: Participant Node participant1 Training Node started.
+Round: 2, Role: participant1, Operation: download_global_model_start, Message: Participant Node participant1 starts downloading global model.
+Round: 2, Role: participant1, Operation: download_global_model_success, Message: Participant Node participant1 global model downloaded successfully.
+Round: 2, Role: participant1, Operation: local_training_start, Message: Participant Node participant1 local model training started.
+Round: 2, Role: participant1, Operation: local_training_success, Message: Participant Node participant1 local model training finished.
+Round: 2, Role: participant1, Operation: upload_model_update_start, Message: Participant Node participant1 starts uploading model update.
+Round: 2, Role: participant1, Operation: upload_model_update_success, Message: Participant Node participant1 model update uploaded successfully.
+Round: 2, Role: participant1, Operation: training_node_complete, Message: Participant Node participant1 Training Node Finished Round: 2
+Round: 2, Role: participant2, Operation: training_node_start, Message: Participant Node participant2 Training Node started.
+Round: 2, Role: participant2, Operation: download_global_model_start, Message: Participant Node participant2 starts downloading global model.
+Round: 2, Role: participant2, Operation: download_global_model_success, Message: Participant Node participant2 global model downloaded successfully.
+Round: 2, Role: participant2, Operation: local_training_start, Message: Participant Node participant2 local model training started.
+Round: 2, Role: participant2, Operation: local_training_success, Message: Participant Node participant2 local model training finished.
+Round: 2, Role: participant2, Operation: upload_model_update_start, Message: Participant Node participant2 starts uploading model update.
+Round: 2, Role: participant2, Operation: upload_model_update_success, Message: Participant Node participant2 model update uploaded successfully.
+Round: 2, Role: participant2, Operation: training_node_complete, Message: Participant Node participant2 Training Node Finished Round: 2
+Round: 2, Role: server, Operation: aggregation_start, Message: Central Server Aggregation Node started.
+Round: 2, Role: server, Operation: download_global_model_start, Message: Central Server starts downloading global model.
+Round: 2, Role: server, Operation: download_global_model_success, Message: Global model downloaded successfully.
+Round: 2, Role: server, Operation: download_participant_updates_start, Message: Central Server starts downloading participant model updates.
+Round: 2, Role: server, Operation: download_participant_updates_success, Message: Participant model updates downloaded successfully.
+Round: 2, Role: server, Operation: aggregation_model_start, Message: Central Server starts aggregating model updates.
+Round: 2, Role: server, Operation: aggregation_model_success, Message: Global model aggregation finished.
+Round: 2, Role: server, Operation: upload_aggregated_model_start, Message: Central Server starts uploading aggregated global model.
+Round: 2, Role: server, Operation: upload_aggregated_model_success, Message: Aggregated global model uploaded successfully.
+Round: 2, Role: server, Operation: aggregation_complete, Message: Central Server Aggregation Node Completed Round: 2
+Round: 2, Role: server, Operation: evaluation_start, Message: Central Server Evaluation Node started.
+Round: 2, Role: server, Operation: download_global_model_start, Message: Central Server starts downloading global model.
+Round: 2, Role: server, Operation: download_global_model_success, Message: Global model downloaded successfully.
+Round: 2, Role: server, Operation: evaluation_model_start, Message: Central Server starts evaluating global model.
+Round: 2, Role: server, Operation: evaluation_model_success, Message: Global model evaluation finished.
+Round: 2, Role: server, Operation: evaluation_complete, Message: Central Server Evaluation Node Completed Round: 2

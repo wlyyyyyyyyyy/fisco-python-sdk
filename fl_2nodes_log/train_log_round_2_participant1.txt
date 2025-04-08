@@ -1,5 +1,0 @@
-Participant: participant1, Epoch: 1, Batch: 0/469, Loss: 0.4511
-Participant: participant1, Epoch: 1, Batch: 100/469, Loss: 0.2163
-Participant: participant1, Epoch: 1, Batch: 200/469, Loss: 0.1625
-Participant: participant1, Epoch: 1, Batch: 300/469, Loss: 0.1061
-Participant: participant1, Epoch: 1, Batch: 400/469, Loss: 0.1055

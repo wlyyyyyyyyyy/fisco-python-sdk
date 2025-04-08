@@ -1,0 +1,3 @@
+2025-03-31 21:42:16.140 | R:0   | Role:System       | Op:LogInit              | Msg:Log directory set to /home/wly/桌面/fisco-python-sdk/fl_py37_logs
+2025-03-31 21:42:16.140 | R:0   | Role:System       | Op:RunStart             | Msg:Config: {'dataset': 'mnist', 'model': 'mlp', 'epochs': 1, 'rounds': 2, 'num_participants': 2, 'batch_size': 64, 'learning_rate': 0.001, 'contract_address': '', 'log_dir': '/home/wly/桌面/fisco-python-sdk/fl_py37_logs'}
+2025-03-31 21:42:16.151 | R:0   | Role:System       | Op:LoadABI              | Msg:Success

@@ -52,3 +52,57 @@ Rounds: 2
 Participants: 3
 Contract Address: 0x7eb40941acf69bc93e0dd62c33dff8fb41d307cc
 ----------------------------------------
+
+[Parameters @ 2025-03-17 14:35:32.735170]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0xb61cddd1c67a1f77850ad81e36e1807272d39caf
+----------------------------------------
+
+[Parameters @ 2025-03-19 16:21:08.689734]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x27476d67e5ad1f4facb9eb4aa34b3bccb4e91161
+----------------------------------------
+
+[Parameters @ 2025-03-31 22:34:00.939419]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x97b8ff79acb303354121106de0f572a64ddd7c5b
+----------------------------------------
+
+[Parameters @ 2025-04-07 16:34:22.959563]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x0285c58d5d2da7a7c6e09b83e9281b25b3b9d3e2
+----------------------------------------
+
+[Parameters @ 2025-04-07 16:34:58.900919]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x83bf512036a2c91904073c6d9d08a7e3fbbda6c2
+----------------------------------------
+
+[Parameters @ 2025-04-08 10:55:21.487875]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 2
+Contract Address: 0xd2bad198d0c8cf6b3fc64641522d191367d6dbbb
+----------------------------------------

@@ -18,6 +18,7 @@ import json
 import torch
 import datetime
 from client_config import client_config as ClientConfig
+import time
 
 # =====  导入 fl_multi_utils.py 中的通用函数和类  =====
 from myclient.fl_multi_utils import ( #  !!!  导入 fl_multi_utils  !!!
@@ -171,6 +172,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
 def run_participant_node(participant_client, contract_abi, contract_address, args, participant_id="participant1", log_dir="fl_multi_log"): #  !!!  修改默认 log_dir !!!
     # ... (函数开始部分，打印信息，与双节点版本类似，需要修改 participant_id 的打印) ...
     log_operation(log_dir, args.current_round, participant_id, "training_node_start", f"Participant Node {participant_id} Training Node started.")
+    start=time
 
     # ----- 1. 下载全局模型 -----
     print(f"\n>>Participant Node ({participant_id}): Downloading Global Model...")
@@ -210,9 +212,10 @@ def run_participant_node(participant_client, contract_abi, contract_address, arg
     else:
         print(f"\n>>Model update upload failed (from Participant: {participant_id}).")
         log_operation(log_dir, args.current_round, participant_id, "upload_model_update_fail", f"Participant Node {participant_id} model update upload failed.")
-
-    log_operation(log_dir, args.current_round, participant_id, "training_node_complete", f"Participant Node {participant_id} Training Node Finished Round: {args.current_round}")
+    end_time=time()
+    log_operation(log_dir, args.current_round, participant_id, "training_node_complete", f"Participant Node {participant_id} Training Node Finished Round: {args.current_round},spending {end_time-start_time}")
     print(f"\n>>Participant Node ({participant_id} - Training Node) Finished Round: {args.current_round}")
+    
 
 
 

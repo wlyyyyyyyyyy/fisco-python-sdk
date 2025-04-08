@@ -1,0 +1,8 @@
+--- Train Start R:2 P:participant1 E:1 T:10:59:02 ---
+ P:participant1 R:2 E:1/1 B:0/469 Loss:0.3180
+ P:participant1 R:2 E:1/1 B:100/469 Loss:0.2145
+ P:participant1 R:2 E:1/1 B:200/469 Loss:0.1705
+ P:participant1 R:2 E:1/1 B:300/469 Loss:0.0929
+ P:participant1 R:2 E:1/1 B:400/469 Loss:0.1701
+Epoch 1 Average Loss: 0.1660
+--- Train End Last Epoch Avg Loss: 0.1660 T:10:59:06 ---

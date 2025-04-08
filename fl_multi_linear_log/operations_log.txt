@@ -1,0 +1,1 @@
+2025-03-31 22:18:28.035 | R:0   | Role:System       | Op:RunStart             | Msg:Config:{'dataset': 'mnist', 'model': 'mlp', 'epochs': 1, 'rounds': 2, 'log_dir': 'fl_multi_linear_log', 'num_participants': 3, 'contract_address': '', 'batch_size': 64, 'linear_input_dim': 5, 'linear_output_dim': 1, 'linear_noise': 0.5, 'linear_samples': 6000, 'input_dim': 784, 'output_dim': 10}

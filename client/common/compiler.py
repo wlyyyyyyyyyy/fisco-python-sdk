@@ -72,8 +72,8 @@ class Compiler:
         """
         compile with solc
         """
-        # sol_file
-        command = "{} --bin --abi {} -o {} --overwrite".format(
+        # 添加基础路径和更完整的依赖路径配置
+        command = "{} --bin --abi {} -o {} --overwrite --base-path . --allow-paths .,node_modules,$(pwd)/node_modules".format(
             Compiler.compiler_path, sol_file, output_path)
         print("INFO >> compile with solc compiler : ", command)
         common.execute_cmd(command)

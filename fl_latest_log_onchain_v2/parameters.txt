@@ -1,0 +1,11 @@
+Run Timestamp: 2025-04-07T19:08:27.155271
+dataset: mnist
+model: mlp
+epochs: 1
+rounds: 3
+log_dir: fl_latest_log_onchain_v2
+num_participants: 3
+address: 
+config: client_config
+Contract Sol Path: ./contracts/Latest.sol
+Contract Name (in Sol): Latest
