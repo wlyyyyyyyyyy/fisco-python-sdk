@@ -20,7 +20,7 @@ import datetime
 import copy
 from client_config import client_config as ClientConfig
 import time
-import random       
+import random
 
 
 # ===== 导入我们修改后的 LATEST utils =====
@@ -49,7 +49,7 @@ CONTRACT_NOTE_NAME = "federatedlearning_latest_onchain_v10" # New name
 # CONTRACT_ADDRESS = ""
 
 # ----- Demo 模式配置 -----
-WAIT_TIME_SECONDS = 5
+WAIT_TIME_SECONDS = 1
 MAX_WAIT_ATTEMPTS = 12
 
 # ----- 自动编译合约 -----
@@ -150,11 +150,13 @@ if __name__ == "__main__":
 
     # ========== 多轮联邦学习循环 ==========
     print("\n" + "="*20 + " Starting Rounds " + "="*20)
+    round_estimated_durations = {} # 用于存储每轮估计的并行耗时
     for round_num in range(1, args.rounds + 1):
         print(f"\n{'='*20} Federated Learning Round: {round_num} {'='*20}"); t_start=time.time(); agg_model_obj=None; leader_hash=None;
 
         # --- 1. 本地训练 & 提交更新 ---
         print(f"\n>> Round {round_num}: Participants Training...")
+        participant_training_times = {}
         for i, p_id in enumerate(participant_ids):
             print(f"\n>> Starting Participant {p_id}...")
             client = participant_clients[i] # 从列表获取客户端
@@ -166,17 +168,24 @@ if __name__ == "__main__":
             else: loader=load_mnist_data_partition_multi(participant_id=p_id,total_participants=num_participants)
 
             print(f">> P:{p_id} Starting Training...")
+            train_start_time = time.time()
             trained_model = train_model(model, loader, args.epochs, log_dir, round_num, p_id)
+            train_end_time = time.time()
             if trained_model is None: continue
+            participant_training_times[p_id] = train_end_time - train_start_time
 
             print(f">> P:{p_id} Uploading Update...")
+            upload_start_time = time.time()
             update_str = serialize_model(trained_model)
             success, _ = submit_update_to_contract(client,contract_abi,CONTRACT_ADDRESS,update_str,round_num,p_id)
+            upload_end_time = time.time()
             print(f">> P:{p_id} Upload Success: {success}")
+            participant_training_times[p_id] += (upload_end_time - upload_start_time) # Include upload time in the participant's time
 
         print(f"\n>> Round {round_num}: Participants Training Finished.")
 
         # --- 2. 等待 & 本地聚合 & 提交哈希 ---
+        
         print(f"\n>> Round {round_num}: Aggregation Phase...")
         aggregator_id = participant_ids[0]; aggregator_client = participant_clients[0];
         print(f">> {aggregator_id} leads aggregation...");
@@ -193,6 +202,7 @@ if __name__ == "__main__":
         else: print(f"[ERROR] Timeout updates R:{round_num}"); print("!! Skip round !!"); continue
 
         # b. Local Aggregation
+        aggregation_start_time = time.time()
         print(">> Aggregating models locally...")
         agg_model_obj = aggregate_global_model(update_dict,args.model,args.dataset)
         if agg_model_obj is None: print("[ERROR] Agg failed R:{round_num}"); print("!! Skip round !!"); continue
@@ -201,17 +211,24 @@ if __name__ == "__main__":
         # c. Calculate Hash (On-Chain) & Submit
         agg_model_str = serialize_model(agg_model_obj)
         print(">> Calculating hash via contract...")
+        hash_start_time = time.time()
         leader_hash = calculate_keccak256_onchain(aggregator_client,contract_abi,CONTRACT_ADDRESS,agg_model_str)
+        hash_end_time = time.time()
         if leader_hash is None: print("[ERROR] Hash calc failed R:{round_num}"); print("!! Skip round !!"); continue
         print(f">> Hash calculated: {leader_hash.hex()}")
         print(">> Submitting hash...")
+        submit_hash_start_time = time.time()
         success, _ = submit_hash_to_contract(aggregator_client,contract_abi,CONTRACT_ADDRESS,round_num,leader_hash,aggregator_id)
+        submit_hash_end_time = time.time()
         print(f">> Hash submission success: {success}")
+        aggregation_end_time = time.time()
 
         # --- 3. 验证阶段 ---
+        
         print(f"\n>> Round {round_num}: Verification Phase...")
         all_ok=True; print(">> Wait before verify..."); time.sleep(1);
         for i, p_id in enumerate(participant_ids):
+            verification_start_time = time.time()
             client = participant_clients[i] # 从列表获取客户端
             print(f"-- P:{p_id} verifying...")
             chain_hash = get_hash_from_contract(client,contract_abi,CONTRACT_ADDRESS,round_num)
@@ -219,6 +236,7 @@ if __name__ == "__main__":
             if leader_hash is None: print(f"[WARN] {p_id} skip verify, leader hash bad"); all_ok=False; continue
             if chain_hash == leader_hash: print(f">> {p_id}: Verify OK!")
             else: print(f"!! {p_id}: VERIFY FAIL R:{round_num} !! MISMATCH"); all_ok=False
+            verification_end_time = time.time()
 
         # --- 4. 更新本地模型 ---
         print(f"\n>> Round {round_num}: Update local models...")
@@ -232,7 +250,16 @@ if __name__ == "__main__":
         else: print("[WARN] Agg failed, models not updated.")
 
         # --- Round End ---
-        print(f"\n{'='*10} R:{round_num} Finished. Dur:{time.time()-t_start:.2f}s {'='*10}")
+        round_end_time_full = time.time()
+        round_duration_full = round_end_time_full - t_start
+        print(f"\n{'='*10} R:{round_num} Finished. Full Dur:{round_duration_full:.2f}s {'='*10}")
+      
+        # --- Estimate Parallel Time ---
+        max_participant_time = max(participant_training_times.values()) if participant_training_times else 0
+        sequential_time = (aggregation_end_time - aggregation_start_time) + (verification_end_time - verification_start_time)
+        estimated_parallel_time = max_participant_time + sequential_time
+        round_estimated_durations[round_num] = estimated_parallel_time
+        print(f">> Round {round_num}: Estimated Parallel Dur:{estimated_parallel_time:.2f}s")
 
 
         # --- 5. 等待确认 ---
@@ -251,4 +278,10 @@ if __name__ == "__main__":
     final_round = get_latest_round_from_contract(deploy_client,contract_abi,CONTRACT_ADDRESS); print(f">> Final confirmed round: {final_round}"); print(f">> Logs in: {log_dir}");
     print(">> Closing clients..."); [c.finish() for c in participant_clients if hasattr(c,'finish')]; print(">> Done.")
 
-# --- END OF FILE myclient/latest_fl.py ---
+    # ========== 将每轮估计的并行耗时写入到 log 文件中 ==========
+    estimated_durations_log_path = os.path.join(log_dir, "estimated_round_durations.log")
+    with open(estimated_durations_log_path, 'a') as f:
+        f.write("\n>>Estimated Per-Round Parallel Durations:\n")
+        for round_num, duration in round_estimated_durations.items():
+            f.write(f">>Round {round_num}: {duration:.4f} seconds\n")
+    print(f"\n>>Estimated per-round parallel durations have been written to: {estimated_durations_log_path}")

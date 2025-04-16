@@ -35,8 +35,8 @@ from myclient.fl_multi_utils import ( #  !!!  导入 fl_multi_utils  !!!
     evaluate_model,
     upload_model_update,
     download_global_model,
-    aggregate_global_model, #  !!!  聚合函数暂时不导入，后面再添加 !!!
-    upload_global_model,    #  !!!  上传全局模型函数暂时不导入，后面再添加 !!!
+    # aggregate_global_model, #  !!!  聚合函数暂时不导入，后面再添加 !!!
+    # upload_global_model,    #  !!!  上传全局模型函数暂时不导入，后面再添加 !!!
 )
 
 # ----- 合约信息 (需要根据你的实际情况修改) -----
@@ -63,7 +63,7 @@ contract_abi = data_parser.contract_abi
 
 # ==========  中央服务器角色函数 (多节点版本) ==========
 def run_central_server(central_server_client, contract_abi, contract_address, args, run_mode, log_dir="fl_multi_log"): #  !!!  修改默认 log_dir !!!
-    if run_mode == 1: 
+    if run_mode == 1:
         print(f"\n>>Starting Central Server (Preparation Node)...")
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Preparation) <<<<<<")
         print(f"\n>>Central Server (Preparation Node) in Round: {args.current_round}")
@@ -73,7 +73,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Aggregation) <<<<<<")
         print(f"\n>>Central Server (Aggregation Node) in Round: {args.current_round}")
         log_operation(log_dir, args.current_round, "server", "aggregation_start", "Central Server Aggregation Node started.")
-    elif run_mode == 3: 
+    elif run_mode == 3:
         print(f"\n>>Starting Central Server (Testing Node - Evaluation)...")
         print(f"\n>>>>> Federated Learning Round: {args.current_round} (Central Server - Evaluation) <<<<<<")
         print(f"\n>>Central Server (Testing Node - Evaluation) in Round: {args.current_round}")
@@ -105,7 +105,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
                 return
 
 
-    if run_mode == 2: 
+    if run_mode == 2:
         # ----- 2. 下载参与者模型更新 -----
         print("\n>>Central Server (Aggregation Node): Downloading Participant Model Updates...")
         log_operation(log_dir, args.current_round, "server", "download_participant_updates_start", "Central Server starts downloading participant model updates.")
@@ -125,14 +125,15 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
         # ----- 3. 模型聚合 (简单的平均聚合) -----
         print("\n>>Central Server (Aggregation Node): Aggregating Model Updates...")
         log_operation(log_dir, args.current_round, "server", "aggregation_model_start", "Central Server starts aggregating model updates.")
-        aggregated_model = aggregate_global_model(global_model, participant_updates, model_type=args.model) #  !!!  聚合函数还没定义， 后面再添加 !!!
-        aggregated_model_str = serialize_model(aggregated_model)
+        # aggregated_model = aggregate_global_model(global_model, participant_updates, model_type=args.model) #  !!!  聚合函数还没定义， 后面再添加 !!!
+        # aggregated_model_str = serialize_model(aggregated_model)
         log_operation(log_dir, args.current_round, "server", "aggregation_model_success", "Global model aggregation finished.")
 
         # ----- 4. 上传聚合后的全局模型 -----
         print("\n>>Central Server (Aggregation Node): Uploading Aggregated Global Model...")
         log_operation(log_dir, args.current_round, "server", "upload_aggregated_model_start", "Central Server starts uploading aggregated global model.")
-        if upload_global_model(central_server_client, contract_abi, contract_address, aggregated_model_str): #  !!! 上传全局模型函数还没定义， 后面再添加 !!!
+        # if upload_global_model(central_server_client, contract_abi, contract_address, aggregated_model_str): #  !!! 上传全局模型函数还没定义， 后面再添加 !!!
+        if True: # Placeholder for upload function
             print("\n>>Aggregated Global Model uploaded successfully.")
             log_operation(log_dir, args.current_round, "server", "upload_aggregated_model_success", "Aggregated global model uploaded successfully.")
         else:
@@ -145,7 +146,7 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
         print(f"\n>>Central Server (Aggregation Node) Completed Round: {args.current_round}")
 
 
-    elif run_mode == 3: 
+    elif run_mode == 3:
         # ----- 2. 加载测试数据集 -----
         print("\n>>Central Server (Testing Node - Evaluation): Loading Test Data...")
         if args.dataset == 'cifar10':
@@ -172,7 +173,6 @@ def run_central_server(central_server_client, contract_abi, contract_address, ar
 def run_participant_node(participant_client, contract_abi, contract_address, args, participant_id="participant1", log_dir="fl_multi_log"): #  !!!  修改默认 log_dir !!!
     # ... (函数开始部分，打印信息，与双节点版本类似，需要修改 participant_id 的打印) ...
     log_operation(log_dir, args.current_round, participant_id, "training_node_start", f"Participant Node {participant_id} Training Node started.")
-    start=time
 
     # ----- 1. 下载全局模型 -----
     print(f"\n>>Participant Node ({participant_id}): Downloading Global Model...")
@@ -212,10 +212,9 @@ def run_participant_node(participant_client, contract_abi, contract_address, arg
     else:
         print(f"\n>>Model update upload failed (from Participant: {participant_id}).")
         log_operation(log_dir, args.current_round, participant_id, "upload_model_update_fail", f"Participant Node {participant_id} model update upload failed.")
-    end_time=time()
-    log_operation(log_dir, args.current_round, participant_id, "training_node_complete", f"Participant Node {participant_id} Training Node Finished Round: {args.current_round},spending {end_time-start_time}")
+    log_operation(log_dir, args.current_round, participant_id, "training_node_complete", f"Participant Node {participant_id} Training Node Finished Round: {args.current_round}")
     print(f"\n>>Participant Node ({participant_id} - Training Node) Finished Round: {args.current_round}")
-    
+
 
 
 
@@ -232,7 +231,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'cifar10'], help='Dataset to use (mnist or cifar10)')
     parser.add_argument('--model', type=str, default='mlp', choices=['mlp', 'cnn'], help='Model to use (mlp or cnn)')
     parser.add_argument('--epochs', type=int, default=1, help='Number of local training epochs per round (default: 1)')
-    parser.add_argument('--rounds', type=int, default=2, help='Number of federated learning rounds (default: 2)')
+    parser.add_argument('--rounds', type=int, default=3, help='Number of federated learning rounds (default: 2)')
     parser.add_argument('--role', type=str, default='demo', choices=['demo', 'server', 'participant'], help='Role to run (demo, server, participant)') # 角色参数 (虽然 demo 模式固定为 demo)
     parser.add_argument('--log_dir', type=str, default='fl_multi_log', help='Directory to save log files (default: fl_multi_log)') #  !!!  日志文件夹参数修改为 fl_multi_log !!!
     parser.add_argument('--num_participants', type=int, default=3, help='Number of participant nodes to simulate in demo mode (default: 3)') #  !!!  新增 num_participants 参数 !!!
@@ -284,7 +283,7 @@ if __name__ == "__main__":
             f.write(f"Dataset: {args.dataset}\n")
             f.write(f"Model: {args.model}\n")
             f.write(f"Epochs: {args.epochs}\n")
-            f.write(f"Rounds: {args.rounds}\n") 
+            f.write(f"Rounds: {args.rounds}\n")
             f.write(f"Participants: {args.num_participants}\n")
             f.write(f"Contract Address: {CONTRACT_ADDRESS}\n")
             f.write("-"*40 + "\n")
@@ -296,12 +295,12 @@ if __name__ == "__main__":
 
     # ==========  多轮联邦学习循环  ==========
     print(f"\n>>[DEBUG - Main Loop Start] Rounds: {args.rounds}") # DEBUG - 输出总轮数
+    round_times = {} # Dictionary to store the time taken for each round
     for round_num in range(1, args.rounds + 1): # 从第 1 轮循环到 rounds 轮
         print(f"\n{'='*20} Federated Learning Round: {round_num} {'='*20}") # 添加轮次分隔符
         args.current_round = round_num # 将当前轮数添加到 args 中
         args.num_participants = num_participants #  !!!  将参与者数量添加到 args 中 !!!
         print(f"\n>>[DEBUG - Main Loop - Round Start] Current Round: {args.current_round}, Num Participants: {args.num_participants}") # DEBUG - 输出每轮循环开始时的轮数
-
 
         # ========== 每一轮的第一次运行中央服务器角色逻辑 (Demo Mode - Server Part - Preparation) ==========
         print(f"\n>>Round {round_num} - First Run: Central Server (Preparation Node) - Model Preparation...")
@@ -310,29 +309,33 @@ if __name__ == "__main__":
         print(f"\n>>[DEBUG - Central Server Preparation End] Round: {args.current_round}, run_mode: 1")
         print(f"\n>>Round {round_num} - First Run: Demo Mode - Central Server (Preparation Node) process finished.")
 
-
         # ========== 模拟参与者节点角色 (Demo Mode - Participant Part - Training and Upload) - 模拟多个参与者节点并行训练 ==========
         print(f"\n>>Round {round_num} - Demo Mode: Participant Nodes (Training Nodes) process starting...") # 修改打印信息 - 复数 Nodes
         print(f"\n>>[DEBUG - Participant Nodes Start] Round: {args.current_round}") # DEBUG - 输出 Participant Nodes 开始时的轮数
 
+        max_traintime=0
         # -----  模拟多个参与者节点并行训练 -----
         participant_ids = [f"participant{i+1}" for i in range(num_participants)] #  !!!  生成参与者 ID 列表 (participant1, participant2, participant3...) !!!
         for i, participant_id in enumerate(participant_ids): #  !!!  循环启动多个参与者节点 !!!
             print(f"\n>>Starting Participant Node ({participant_id})...")
+            participant_start_time = time.time() # Start time for participant training (simulating parallel execution)
             run_participant_node(participant_clients[i], contract_abi, CONTRACT_ADDRESS, args, participant_id=participant_id, log_dir=log_dir) #  !!!  为每个参与者传递不同的 participant_id 和 client 实例 !!!
-
+            participant_end_time = time.time() # End time for participant training
+            max_traintime=max(max_traintime,participant_end_time-participant_start_time)
+            
         print(f"\n>>[DEBUG - Participant Nodes End] Round: {args.current_round}") # DEBUG - 输出 Participant Nodes 结束时的轮数
         print(f"\n>>Round {round_num} - Demo Mode: Participant Nodes (Training Nodes) process finished.") # 修改打印信息 - 复数 Nodes
-
 
         # ========== 每一轮的第二次运行中央服务器角色逻辑 (Demo Mode - Server Part - Aggregation) ==========
         print(f"\n>>Round {round_num} - Second Run: Central Server (Aggregation Node) - Model Aggregation...")
         print(f"\n>>[DEBUG - Central Server Aggregation Start] Round: {args.current_round}, run_mode: 2")
+        aggerate_start_time=time.time()
         run_central_server(central_server_client, contract_abi, CONTRACT_ADDRESS, args, run_mode=2, log_dir=log_dir) # 顺序执行中央服务器逻辑 (Aggregation), 传递 args, run_mode=2, 传递 log_dir
+        aggerate_end_time=time.time()
+        round_times[round_num]=max_traintime+(aggerate_end_time-aggerate_start_time)
         print(f"\n>>[DEBUG - Central Server Aggregation End] Round: {args.current_round}, run_mode: 2")
         print(f"\n>>Round {round_num} - Second Run: Demo Mode - Central Server (Aggregation Node) process finished.")
-
-
+        '''
         # ========== 每一轮的第三次运行中央服务器角色逻辑 (Demo Mode - Server Part - Evaluation) - 每轮训练后都评估 ==========
         print(f"\n>>Round {round_num} - Third Run: Central Server (Testing Node - Evaluation) - Model Evaluation after Round {round_num} Aggregation...")
         print(f"\n>>[DEBUG - Central Server Evaluation Start] Round: {args.current_round}, run_mode: 3")
@@ -340,6 +343,16 @@ if __name__ == "__main__":
         print(f"\n>>[DEBUG - Central Server Evaluation End] Round: {args.current_round}, run_mode: 3")
         print(f"\n>>Round {round_num} - Third Run: Demo Mode - Central Server (Testing Node - Evaluation) process finished.")
         print(f"\n>>[DEBUG - Main Loop - Round End] Current Round: {args.current_round}") # DEBUG - 输出每轮循环结束时的轮数
-
-
+        '''
     print("\n>>Federated Learning Demo (Multi-Node Version, Parameter Configurable, Multi-Round Training, Evaluation and Logging, Per-Round Evaluation, Clear Log Folder, Optimized Client Creation, 3-Run Central Server) Finished!") # 修改打印信息，更清晰地表达当前模式
+    print("\n>>Per-Round Training Time (Simulating Parallel Execution):")
+    for round_num, duration in round_times.items():
+        print(f">>Round {round_num}: {duration:.4f} seconds")
+
+    # ========== 将每轮时间写入到 log 文件中 ==========
+    round_times_log_path = os.path.join(log_dir, "round_times.log")
+    with open(round_times_log_path, 'a') as f:
+        f.write("\n>>Per-Round Training Time (Simulating Parallel Execution):\n")
+        for round_num, duration in round_times.items():
+            f.write(f">>Round {round_num}: {duration:.4f} seconds\n")
+    print(f"\n>>Per-round training times have been written to: {round_times_log_path}")

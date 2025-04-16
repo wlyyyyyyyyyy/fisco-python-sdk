@@ -106,3 +106,84 @@ Rounds: 2
 Participants: 2
 Contract Address: 0xd2bad198d0c8cf6b3fc64641522d191367d6dbbb
 ----------------------------------------
+
+[Parameters @ 2025-04-08 11:19:34.765926]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 2
+Participants: 3
+Contract Address: 0x8aeb2347cffc15cfb4df2ba7e26dedacbe22cce7
+----------------------------------------
+
+[Parameters @ 2025-04-08 11:21:42.799338]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xf96d0475ebedf36ab426cf43117d97a26843f2a0
+----------------------------------------
+
+[Parameters @ 2025-04-08 12:40:47.994409]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xcb6926e18a68c1d2036fdb6e26e009f5a3391f04
+----------------------------------------
+
+[Parameters @ 2025-04-08 12:59:13.572406]
+Dataset: cifar10
+Model: cnn
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xabd2a00a52c1bc0c4cba1e4e43fd8d6defeac220
+----------------------------------------
+
+[Parameters @ 2025-04-08 13:31:51.651045]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xaec035e17ed44e95e3c9e9390e613e9f52a78b9c
+----------------------------------------
+
+[Parameters @ 2025-04-08 13:33:58.735005]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xe6591c54a143a638347e271a6e7c428f3aa52bb0
+----------------------------------------
+
+[Parameters @ 2025-04-08 13:37:24.260967]
+Dataset: cifar10
+Model: cnn
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0x48b02220420e37bdb32376b57e2f699eefb53ece
+----------------------------------------
+
+[Parameters @ 2025-04-08 13:48:45.639887]
+Dataset: cifar10
+Model: cnn
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0xbdf74a7d9d2f5c80b619bad49d58e779774cab6d
+----------------------------------------
+
+[Parameters @ 2025-04-14 19:17:40.358419]
+Dataset: mnist
+Model: mlp
+Epochs: 1
+Rounds: 3
+Participants: 3
+Contract Address: 0x2d85719235e157e38c178454cca0923579bca07b
+----------------------------------------
